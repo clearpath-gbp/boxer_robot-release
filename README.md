@@ -13,8 +13,11 @@ The ROS2 API operates on 3 domains:
 | Domain ID | API      | ROS1 Bridge Node   | Topic Namespace     |
 |-----------|----------|--------------------|---------------------|
 | 100       | Fleet    | `fleet_bridge`     | `/cpr_fleet_api`    |
-| 110       | Autonomy | `autonomy_bridge`  | `/cpr_autonomy_api` |
-| 120       | Platform | `platform_bridge`  | `/cpr_platform_api` |
+| 95        | Autonomy | `autonomy_bridge`  | `/cpr_autonomy_api` |
+| 90        | Platform | `platform_bridge`  | `/cpr_platform_api` |
+
+NOTE: In Otto 2.22.3 the Autonomy API operated on domain 110 and the Platform API operated on domain 120. This was
+changed in the 2.22.4 release
 
 The `boxer_base` package contains the necessary launch files and scripts to translate the ROS2 topics into their
 appropriate ROS1 names.  By default the Otto 100 publishes all topics into a namespace matching the robot's physical
@@ -40,13 +43,14 @@ Base Platform Preparation
 You must enable the ROS2 API on the base platform before you can operate the robot.  To do this, ssh into the
 base platform (hostname matches the serial number).
 
-If you are using the latest version of the Otto software, 2.22.3 at the time of writing, add the following to
+If you are using the latest version of the Otto software, 2.22.4 at the time of writing, add the following to
 `/etc/ros/setup.bash`
 
 ```bash
 export ROBOT_REQUIRE_NIMBUS=False
 export BRIDGE_INTF=att0
 export ENABLE_PLATFORM_ADAPTOR=True
+export ENABLE_AUTONOMY_ADAPTOR=True
 ```
 
 Older versions of the Otto software, such as 1.18.x, require additional configuration:
@@ -56,6 +60,7 @@ create the file `/var/tmp/rzr_configuration/env.sh` and put the following into i
 export ROBOT_REQUIRE_NIMBUS=False
 export BRIDGE_INTF=att0
 export ENABLE_PLATFORM_ADAPTOR=True
+export ENABLE_AUTONOMY_ADAPTOR=True
 ```
 
 Then edit `/etc/ros/setup.bash` and add the following:
@@ -66,6 +71,10 @@ source /var/tmp/rzr_configuration/env.sh
 
 Regardless of which API version you have installed, power-cycle the robot after making these changes.
 
+If you want to permanently
+
+/opt/clearpath/X.YY/share/audio_indication/config/audio_indication.yaml
+master_volume: 0.0
 
 Backpack PC Preparation
 -------------------------
@@ -77,7 +86,7 @@ sudo apt-get install ros-foxy-ros-base ros-foxy-ros1-bridge ros-foxy-rmw-cyclone
 ```
 
 Then install the ROS2 API packages provided by Otto.  Depending on the version of the Otto software you may
-need a different version.  Otto 2.22.3 uses API 1.3:
+need a different version.  Otto 2.22.x uses API 1.3:
 
 ```bash
 wget http://prod-vm-jfrog-01.clearpath.ai//cpr-deps/pool/focal/clearpath-api_1.3.3-0_amd64.deb
